@@ -10,6 +10,46 @@ format compact
 
 %T = optitrack_R2();
 
+% FileNames = [
+% 
+%  "Global Boom/TrackFloor_240610_003";
+% 
+% ];
+
+cd 'Global Boom'
+FileNames = string(ls("*csv"));
+cd ..;
+
+
+% Marker count then number of rigid bodies
+MarkerInfos = [
+    3, 1;
+];
+
+% Every row is a new test, numerous columns for numerous bodies
+BodyNameLists = [
+    "Leg";
+   
+];
+
+normalizeBools = [
+    1
+    
+];
+
+saveBools = [
+    0
+    
+];
+
+%Z = optitrack_R2
+
+% for i = 1%:length(FileNames,2) %CHANGE THIS WHEN MULTIPLE ROWS!
+%     T = optitrackInterp(FileNames(i, :), MarkerInfos(i, :), BodyNameLists(i, :), normalizeBools(i), saveBools(i));
+end
+
+T = optitrackInterp(FileNames(i, :), MarkerInfos(i, :), BodyNameLists(i, :), normalizeBools(i), saveBools(i));
+
 % hand tuned prominence, will need to figure out an inteligent way to do
 % this in the future
 
@@ -70,7 +110,7 @@ figure()
 
 %% Organizing the beginning and end of the ground portions
 
-groundIndexes = sort([allMins, allMaxes]);
+groundIndexes = sort([groundBegin, groundEnd]);
 groundIndexes = groundIndexes(2:(end-1));
 
 figure()
@@ -79,11 +119,28 @@ figure()
     plot(T.Time(marker1maxes), T.BoomLeg_2406Marker1Y(marker1maxes), 'rx')
     hold on 
     for a = 1:2:length(groundIndexes)
-        fill([T.Time(groundIndexes(a)),T.Time(groundIndexes(a)), T.Time(groundIndexes(a+1)), T.Time(groundIndexes(a+1))], [min(T.BoomLeg_2406Marker1Y) .06 .06 0], 'r')
-        alpha(.5)
+        fill([T.Time(groundIndexes(a)),T.Time(groundIndexes(a)), T.Time(groundIndexes(a+1)), T.Time(groundIndexes(a+1))], [min(T.BoomLeg_2406Marker1Y) .06 .06 min(T.BoomLeg_2406Marker1Y)], 'b')
+        alpha(.05)
     end
-    % plot(T.Time(groundIndexes), T.BoomLeg_2406Marker1Y(groundIndexes), 'go')
-    % ylim([min(T.BoomLeg_2406Marker1Y), (max(T.BoomLeg_2406Marker1Y(marker1maxes))*1.1)])
+    ylim([min(T.BoomLeg_2406Marker1Y), (max(T.BoomLeg_2406Marker1Y(marker1maxes))*1.1)])
+
+
+%% Change in arc length
+
+% how do I get slip from this? Definitely can treat as linear; dtheta is so
+% small approx as straight line
+
+% Normalize values, take RSS, then compare magnitude? Normalize on
+% beginning to get beginning slip, then normalize on end to get end slip?
+% Doesn't let you account for slipping in the middle, though this is less
+% likely...
+
+figure()
+plot(T.BoomLeg_2406Marker1X(groundIndexes(1):groundIndexes(2)), T.BoomLeg_2406Marker1Z(groundIndexes(1):groundIndexes(2)))
+hold on
+plot(T.BoomLeg_2406Marker1X(groundIndexes(1)), T.BoomLeg_2406Marker1Z(groundIndexes(1)), 'ro')
+hold on
+plot(T.BoomLeg_2406Marker1X(groundIndexes(2)), T.BoomLeg_2406Marker1Z(groundIndexes(2)), 'go')
 
 
 %% Old/ proven stuff
