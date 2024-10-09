@@ -23,7 +23,7 @@ function [UserRigidP] = optitrack_R2()
 
 
 %These are the types of rotation that can be associated with a pivot point
-RotationNames = ["RotationX", "RotationY", "RotationZ"]; 
+RotationNames = ["RotationY", "RotationX", "RotationZ"]; 
 
 %Markers are assigned X, Y, Z, or MQ (Marker Quality) in the .csv
 MarkerNames = ["X", "Y", "Z", "MQ"];
@@ -255,13 +255,14 @@ end
 % overwrite any previous saves, and will take the same name as the CSV
 % filename.  This will remove the need to run the program multiple times
 % for the same data
-SaveBool = input("Do you want to save this data to a .mat file named after the CSV (overwrites previous saves)? (Y/N): ", 's');
+SaveBool = input("Do you want to save this data to a .json file named after the CSV (overwrites previous saves)? (Y/N): ", 's');
 
 if (SaveBool == 'Y')||(SaveBool == 'y')
-    save(strcat(FileNamePlain,".mat"),"-struct","UserRigidP");
-    fprintf("\n***Saved to .mat file***\n")
+    writestruct(UserRigidP, strcat(FileNamePlain, ".json"));
+    % save(strcat(FileNamePlain,".mat"),"-struct","UserRigidP");
+    fprintf("\n***Saved to .json file***\n")
 else
-    fprintf("\n***Data not saved to .mat file***\n")
+    fprintf("\n***Data not saved to .json file***\n")
 end
 
 
