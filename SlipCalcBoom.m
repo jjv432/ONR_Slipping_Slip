@@ -5,7 +5,8 @@ format compact
 t = readstruct("BoomData_HandActuated.json");
 %{
 
-    World frame: Z up, x-y in-plane with ground
+    World frame: Z up, x-y in-plane with ground 
+    0 in vertical axis is the Ground, not the track!
     
 %}
 
@@ -27,10 +28,10 @@ phis = height * (2*pi)/(4*4096*3);
 %% Creating Objects for each part of the system
 Platform.OuterDiameter = 1.5;
 Platform.InnerDiameter = 1.0;
-Platform.Thickness = 0.001; %height between bottom of boom to top of platform
+Platform.Thickness = 0.1; %height between bottom of boom to top of platform
 
-Boom.VerticalDisplacement = 0.05; % meters 
-Boom.Length = 1.25; % m
+Boom.VerticalDisplacement = .75; % meters %MEASURE
+Boom.Length = 1.25; % m 
 Boom.Diameter = .025; % m
 Boom.Phi = phis;
 Boom.Theta = thetas;
@@ -41,7 +42,7 @@ Hip.Thickness = 0.5;
 
 Linkage.EndEffector = x; % FIX!
 
-boomPlotter(Platform, Boom, Hip, Linkage);
+boomPlotter(t, Platform, Boom, Hip, Linkage);
 
 
 %% Plotting
@@ -62,15 +63,15 @@ bz_hat = nRb(:,3);
 
 no_r_fo(:, i) = (L + x(i))* nRb(:, 1) + z(i) * nRb(:,3) + h*[0; 0; 1];
 end
-%%
+%% Extra/ old
 % figure()
-for j = 1:i
-    hold on
-plot3(no_r_fo(1,j), no_r_fo(2,j), no_r_fo(3,j), '.')
-pause(.1)
-axis([-2.5 2.5 -2.5  2.5 0 1])
-view(-45, 15);
-end
+% for j = 1:i
+%     hold on
+% plot3(no_r_fo(1,j), no_r_fo(2,j), no_r_fo(3,j), '.')
+% pause(.1)
+% axis([-2.5 2.5 -2.5  2.5 0 1])
+% view(-45, 15);
+% end
 
 % figure()
 % for j = 1:i

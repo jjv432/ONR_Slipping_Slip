@@ -1,6 +1,6 @@
-function boomPlotter(Platform ,Boom, Hip, Linkage)
+function boomPlotter(data, Platform ,Boom, Hip, Linkage)
 
-%% Platform generation
+%% Platform
 plat_angles = linspace(0, 2*pi, 100);
 
 PlatformInnerX = Platform.InnerDiameter * cos(plat_angles);
@@ -13,60 +13,63 @@ Xs = [PlatformInnerX, PlatformOuterX, PlatformOuterX, PlatformInnerX]';
 Ys = [PlatformInnerY, PlatformOuterY, PlatformOuterY, PlatformInnerY]';
 
 LowZ = zeros(numel(plat_angles), 1);
-HighZ = .5 * ones(numel(plat_angles), 1);
+HighZ = Platform.Thickness * ones(numel(plat_angles), 1);
 
 Zs = [LowZ; LowZ; HighZ; HighZ];
 
 figure();
+hold on
 Platform.AlphaShape = alphaShape(Xs, Ys, Zs);
-plot(Platform.AlphaShape, 'FaceColor', 'black')
+plot(Platform.AlphaShape, 'FaceColor', 'blue')
+axis([-2 2 -2 2 -2 2])
+pause(1)
 
-%% Boom Generation
-
-%{
-    !!!!!!!    
-    Need to put the actual transforms in here, these are an approximation
-    for now. This is assuming Z is relatively small. Theres definitely a
-    sin or cos wrong somewhere too
-%}
-
-drawTheta = linspace(0,2*pi, length(Boom.Theta));
-R = Boom.Diameter/2;
-CircleX = R*cos(drawTheta);
-CircleY = R*sin(drawTheta);
-
-figure();
-for i = 1:5:length(Boom.Theta)
-
-    BoomEndX = Boom.Length.*cos(Boom.Theta(i));
-    BoomEndY = Boom.Length.*sin(Boom.Theta(i));
-    BoomEndZ = Boom.Length.*sin(Boom.Phi(i)) + Boom.VerticalDisplacement;
-
-    RealCircleX = CircleX .* cos(Boom.Theta(i));
-    RealCircleY = CircleY .* sin(Boom.Theta(i));
-
-    BeginningX = RealCircleX;
-    BeginningY = RealCircleY;
-
-    EndX = RealCircleX + BoomEndX;
-    EndY = RealCircleY + BoomEndY;
-
-    % Right?
-    CircleZ = R*sin(drawTheta).*cos(Boom.Phi(i)) + Boom.VerticalDisplacement;
-
-    BeginningZ = CircleZ;
-    EndZ = CircleZ + BoomEndZ;
-    Xs = [BeginningX'; EndX'];
-    Ys = [BeginningY'; EndY'];
-    Zs = [BeginningZ'; EndZ'];
-
-    tempAlphaShape = alphaShape(Xs, Ys, Zs);
-    plot(tempAlphaShape, 'FaceColor', 'red')
-    axis([0 2.5 0 2.5 0 1])
-    pause(.01);
+%% Boom Arm 
 
 
+BoomAnglesGround = data.orientation;
+BoomAnglesVertical = data.tilt/(4*4960); %CHECK THIS!
 
-    %clf
+%https://en.wikipedia.org/wiki/Rotation_matrix
+alphas = BoomAnglesGround;
+betas = BoomAnglesVertical;
+gammas = zeros(length(alphas), 1);
+
+for i = 1:length(alphas)
+
+    alpha = alphas(i);
+    beta = betas(i);
+    gamma = gammas(i);
+
+temp = [    
+    cos(alpha), -sin(alpha), 0;
+    sin(alpha), cos(alpha), 0;
+    0, 0, 1
+
+] * [
+
+    cos(beta), 0, sin(beta);
+    0, 1, 0;
+    -sin(beta), 0, cos(beta)
+
+] * [
+
+    1, 0, 0;
+    0, cos(gamma), -sin(gamma);
+    0, sin(gamma), cos(gamma);
+];
+
+R(:, i) = temp * [Boom.Length; 0; 0] - [0; 0; Boom.VerticalDisplacement];
+
+X = [0 R(1,i)];
+Y = [0 R(2,i)];
+Z = [-Boom.VerticalDisplacement R(3,i)];
+
+h = line(X, Y, -Z, 'LineWidth', 5, 'Color', 'black');
+pause(.1)
+%view(45, 45)
+delete(h);
 
 end
+
+
