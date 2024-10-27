@@ -21,6 +21,10 @@ figure();
 hold on
 Platform.AlphaShape = alphaShape(Xs, Ys, Zs);
 plot(Platform.AlphaShape, 'FaceColor', 'blue')
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+
 axis([-2 2 -2 2 -2 2])
 pause(1)
 
@@ -35,40 +39,49 @@ alphas = BoomAnglesGround;
 betas = BoomAnglesVertical;
 gammas = zeros(length(alphas), 1);
 
-for i = 1:length(alphas)
+% These are the coordinates of the alpha shape for the arm when t = 0
+% (theta and phi == 0)
+Xv = Boom.Length.*[0, 0, 0, 0, 1, 1, 1, 1];
+Yv = (Boom.Diameter/2).*[0, 1, 0, -1, -1, 0, 1, 0];
+Zv = (Boom.Diameter/2).*[1, 0, -1, 0, 0, -1, 0, 1];
+
+armCoord = [Xv; Yv; Zv];
+
+for i = 1:10:length(alphas)
 
     alpha = alphas(i);
     beta = betas(i);
     gamma = gammas(i);
 
-temp = [    
-    cos(alpha), -sin(alpha), 0;
-    sin(alpha), cos(alpha), 0;
-    0, 0, 1
 
-] * [
+    % Rotation matrix to get boom end in world frame
 
-    cos(beta), 0, sin(beta);
-    0, 1, 0;
-    -sin(beta), 0, cos(beta)
+    rotMatrix = [    
+        cos(alpha), -sin(alpha), 0;
+        sin(alpha), cos(alpha), 0;
+        0, 0, 1
+    
+    ] * [
+    
+        cos(beta), 0, sin(beta);
+        0, 1, 0;
+        -sin(beta), 0, cos(beta)
+    
+    ] * [
+    
+        1, 0, 0;
+        0, cos(gamma), -sin(gamma);
+        0, sin(gamma), cos(gamma);
+    ];
 
-] * [
-
-    1, 0, 0;
-    0, cos(gamma), -sin(gamma);
-    0, sin(gamma), cos(gamma);
-];
-
-R(:, i) = temp * [Boom.Length; 0; 0] - [0; 0; Boom.VerticalDisplacement];
-
-X = [0 R(1,i)];
-Y = [0 R(2,i)];
-Z = [-Boom.VerticalDisplacement R(3,i)];
-
-h = line(X, Y, -Z, 'LineWidth', 5, 'Color', 'black');
-pause(.1)
-%view(45, 45)
-delete(h);
+    % X, Y, Z of the end of the boom
+    temparmCoord = rotMatrix * armCoord;
+    
+    BoomAlphaShape = alphaShape(temparmCoord(1, :)', temparmCoord(2, :)', (-temparmCoord(3, :)' + Boom.VerticalDisplacement));
+    h1 = plot(BoomAlphaShape, 'FaceColor', 'white');
+    pause(.5);
+    delete(h1)
+   
 
 end
 
