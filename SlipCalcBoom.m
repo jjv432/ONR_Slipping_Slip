@@ -18,10 +18,6 @@ t = readstruct("BoomData_HandActuated.json");
     
 %}
 
-L = 2;
-
-h = 0.5;
-
 %% Sorting Data
 height = t.height;
 thetas = t.orientation;
@@ -54,41 +50,3 @@ Linkage.EndEffector.X = x;
 Linkage.EndEffector.Z = z;
 
 boomPlotter(t, Platform, Boom, Hip, Linkage);
-
-
-%% Plotting
-% for i = 1:length(thetas)
-% 
-% phi = phis(i);
-% theta = thetas(i);
-% 
-% nRb = [
-%     cos(phi)*cos(theta) - sin(phi)*sin(theta), - cos(phi)*sin(theta) - cos(theta)*sin(phi), 0;
-%     cos(phi)*sin(theta) + cos(theta)*sin(phi),   cos(phi)*cos(theta) - sin(phi)*sin(theta), 0;
-%     0, 0, 1
-%     ];
-% 
-% 
-% bx_hat =  nRb(:,1);
-% bz_hat = nRb(:,3);
-% 
-% no_r_fo(:, i) = (L + x(i))* nRb(:, 1) + z(i) * nRb(:,3) + h*[0; 0; 1];
-% end
-%% Extra/ old
-% figure()
-% for j = 1:i
-%     hold on
-% plot3(no_r_fo(1,j), no_r_fo(2,j), no_r_fo(3,j), '.')
-% pause(.1)
-% axis([-2.5 2.5 -2.5  2.5 0 1])
-% view(-45, 15);
-% end
-
-% figure()
-% for j = 1:i
-%     hold on
-% plot(no_r_fo(2,j), no_r_fo(1,j), '.')
-% pause(.1)
-% %axis([0 2.5 0.25 .75])
-% axis('auto')
-% end
