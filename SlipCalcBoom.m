@@ -15,6 +15,18 @@ t = readstruct("BoomData_HandActuated.json");
     
     Make alpha shapes end on the first element (wrap them around) to make
     it not do the clipping thing?
+
+    Math, including fixing orientation (off by about a quarter)
+
+    Real measurements of everything
+
+    Make objects that are round closer to round (instead of squares/ low-
+    res polys)
+
+    Consider running this, saving all of the alpha shapes, THEN plotting.
+    This will allow for realistic dts as there will be (relatively) little
+    processing time, and the delay can just be set to the dt of the boom
+    measurements instead of some arbitrary value.
     
 %}
 
@@ -23,6 +35,7 @@ height = t.height;
 thetas = t.orientation;
 time = t.time;
 
+%x = .15* cos(1:length(thetas));
 x = zeros(length(thetas), 1);
 z = .15* sin(1:length(thetas)) +.15;
 
