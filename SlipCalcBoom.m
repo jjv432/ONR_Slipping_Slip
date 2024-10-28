@@ -10,9 +10,16 @@ t = readstruct("BoomData_HandActuated.json");
     
 %}
 
+%% TODO Notes
+%{
+    
+    Make alpha shapes end on the first element (wrap them around) to make
+    it not do the clipping thing?
+    
+%}
+
 L = 2;
-x = 1;
-z = 1;
+
 h = 0.5;
 
 %% Sorting Data
@@ -20,10 +27,10 @@ height = t.height;
 thetas = t.orientation;
 time = t.time;
 
-x = .01*ones(length(thetas), 1);
-z = .01* sin(1:length(thetas));
+x = zeros(length(thetas), 1);
+z = .15* sin(1:length(thetas)) +.15;
 
-phis = height * (2*pi)/(4*4096*3);
+phis = height * (2*pi)/(4*4096*3); % double check
 
 %% Creating Objects for each part of the system
 Platform.OuterDiameter = 1.5;
@@ -36,11 +43,15 @@ Boom.Diameter = .025; % m
 Boom.Phi = phis;
 Boom.Theta = thetas;
 
-Hip.Height = 1; 
-Hip.Width = 0.5;
-Hip.Thickness = 0.5;
+Hip.Height = .5; 
+Hip.Width = 0.25;
+Hip.Thickness = 0.25;
 
-Linkage.EndEffector = x; % FIX!
+Linkage.EndEffector.Radius = .1;
+Linkage.EndEffector.Thickness = .1;
+
+Linkage.EndEffector.X = x;
+Linkage.EndEffector.Z = z;
 
 boomPlotter(t, Platform, Boom, Hip, Linkage);
 
