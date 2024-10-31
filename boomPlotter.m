@@ -75,6 +75,15 @@ Zee = Linkage.EndEffector.Radius*[sin(0), sin(pi/4), sin(pi/2), sin(3*pi/4), sin
 
 effectorCoord = [Xee; Yee; Zee];
 
+%% Left Proximal Link
+
+Xpl = Linkage.Proximal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Ypl = Linkage.Proximal.Length*[0 0 0 0 -1 -1 -1 -1];
+Zpl = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
+
+proximalLeftCoord = [Xpl; Ypl; Zpl];
+
+
 %% Moving the bodies
 for i = 1:10:length(alphas)
     
@@ -113,18 +122,23 @@ for i = 1:10:length(alphas)
 
     BoomAlphaShape = alphaShape(BoomXs', BoomYs', BoomZs');
     h1 = plot(BoomAlphaShape, 'FaceColor', 'white');
-    view(98, 8);
+    view(45, 20);
+    axis('manual')
+       
 
 
-    % Hip ---------------------------------
+    % Hip -----------------------------
 
     temphipCoord = rotMatrix * hipCoord;
     HipXs = temphipCoord(1,:) + max(BoomXs);
     HipYs = temphipCoord(2,:) + max(BoomYs);
-    HipZs = -temphipCoord(3,:) + max(BoomZs);
+    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end));
+    % only doing the last four for Zs because those are the four points at
+    % the end of the boom
 
-    BoomAlphaShape = alphaShape(HipXs', HipYs', HipZs');
-    h2 = plot(BoomAlphaShape, 'FaceColor', 'white');
+    HipAlphaShape = alphaShape(HipXs', HipYs', HipZs');
+    h2 = plot(HipAlphaShape, 'FaceColor', 'white');
+    
 
     % End Effector ------------------------
 
@@ -133,14 +147,35 @@ for i = 1:10:length(alphas)
     eeYs = tempeffecotrCoord(2,:) + mean(HipYs);
     eeZs = -tempeffecotrCoord(3,:) + min(HipZs);
 
-    BoomAlphaShape = alphaShape(eeXs', eeYs', eeZs');
-    h3 = plot(BoomAlphaShape, 'FaceColor', 'black');
+    % EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
+    % h3 = plot(EEAlphaShape, 'FaceColor', 'black');
+    % axis([-2 2 -2 2 0 1.5]);
+
+    % Proximal Left ------------------------
+    % Fix this! WRONG APPROACH! Need second rotation matrix here, not what
+    % I'm trying to do alread, I think
+    % YDisp = Linkage.Proximal.Left.X(i);
+    % ZDisp = Linkage.Proximal.Left.Z(i);
+    % 
+    % proximalLeftCoord(2,4:end) = proximalLeftCoord(1,4:end) + YDisp;
+    % proximalLeftCoord(3,4:end) = proximalLeftCoord(1,4:end) + ZDisp;
+
+    tempProximalLeftCoord = rotMatrix * (proximalLeftCoord);
+
+    plXs = tempProximalLeftCoord(1,:) + mean(HipXs);
+    plYs = tempProximalLeftCoord(2,:) + mean(HipYs);
+    plZs = -tempProximalLeftCoord(3,:) + min(HipZs);
+
+    PLAlphaShape = alphaShape(plXs', plYs', plZs');
+    h4 = plot(PLAlphaShape, 'FaceColor', 'black');
+    axis([-2 2 -2 2 0 1.5]);
 
 
     pause(.05);
     delete(h1)
     delete(h2);
-    delete(h3);
+    % delete(h3);
+    delete(h4);
    
 
 end

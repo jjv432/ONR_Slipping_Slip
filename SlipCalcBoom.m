@@ -27,6 +27,9 @@ t = readstruct("BoomData_HandActuated.json");
     This will allow for realistic dts as there will be (relatively) little
     processing time, and the delay can just be set to the dt of the boom
     measurements instead of some arbitrary value.
+
+    Hip looks like it slides across boom when close to the ground. Not sure
+    why
     
 %}
 
@@ -37,7 +40,7 @@ time = t.time;
 
 %x = .15* cos(1:length(thetas));
 x = zeros(length(thetas), 1);
-z = .15* sin(1:length(thetas)) +.15;
+z = .1* sin(.001 * 1:length(thetas)) +.10;
 
 phis = height * (2*pi)/(4*4096*3); % double check
 
@@ -53,13 +56,23 @@ Boom.Phi = phis;
 Boom.Theta = thetas;
 
 Hip.Height = .5; 
-Hip.Width = 0.25;
-Hip.Thickness = 0.25;
+Hip.Width = 0.2;
+Hip.Thickness = 0.15;
 
 Linkage.EndEffector.Radius = .1;
 Linkage.EndEffector.Thickness = .1;
 
 Linkage.EndEffector.X = x;
 Linkage.EndEffector.Z = z;
+
+Linkage.Proximal.Length = .5;
+Linkage.Proximal.Height = .1;
+Linkage.Proximal.Thickness = .1;
+Linkage.Proximal.Left.X = zeros(length(thetas), 1);
+Linkage.Proximal.Left.Z = zeros(length(thetas), 1);
+
+
+Linkage.Distal.Length = .25;
+Linkage.Distal.Thicknes = .1;
 
 boomPlotter(t, Platform, Boom, Hip, Linkage);
