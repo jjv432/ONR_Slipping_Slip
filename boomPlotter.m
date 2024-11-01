@@ -83,6 +83,25 @@ Zpl = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 
 proximalLeftCoord = [Xpl; Ypl; Zpl];
 
+PLtheta = Linkage.Proximal.Left.Theta;
+
+for a = 1:length(PLtheta)
+    proximalLeftCoords(:, :, a) = proximalLeftCoord' * [1 0 0; 0 sin(PLtheta(a)) cos(PLtheta(a)); 0 -cos(PLtheta(a)) sin(PLtheta(a))];
+end
+
+%% Right Proximal Link
+
+Xpr = Linkage.Proximal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Ypr = Linkage.Proximal.Length*[0 0 0 0 1 1 1 1];
+Zpr = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
+
+proximalRightCoord = [Xpr; Ypr; Zpr];
+
+PRtheta = Linkage.Proximal.Right.Theta;
+
+for a = 1:length(PRtheta)
+    proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 sin(PRtheta(a)) cos(PRtheta(a)); 0 -cos(PRtheta(a)) sin(PRtheta(a))];
+end
 
 %% Moving the bodies
 for i = 1:10:length(alphas)
@@ -152,15 +171,8 @@ for i = 1:10:length(alphas)
     % axis([-2 2 -2 2 0 1.5]);
 
     % Proximal Left ------------------------
-    % Fix this! WRONG APPROACH! Need second rotation matrix here, not what
-    % I'm trying to do alread, I think
-    % YDisp = Linkage.Proximal.Left.X(i);
-    % ZDisp = Linkage.Proximal.Left.Z(i);
-    % 
-    % proximalLeftCoord(2,4:end) = proximalLeftCoord(1,4:end) + YDisp;
-    % proximalLeftCoord(3,4:end) = proximalLeftCoord(1,4:end) + ZDisp;
-
-    tempProximalLeftCoord = rotMatrix * (proximalLeftCoord);
+    
+    tempProximalLeftCoord = rotMatrix * (proximalLeftCoords(:, :, i)');
 
     plXs = tempProximalLeftCoord(1,:) + mean(HipXs);
     plYs = tempProximalLeftCoord(2,:) + mean(HipYs);
@@ -170,12 +182,25 @@ for i = 1:10:length(alphas)
     h4 = plot(PLAlphaShape, 'FaceColor', 'black');
     axis([-2 2 -2 2 0 1.5]);
 
+    % Proximal Right ------------------------
+    
+    tempProximalRightCoord = rotMatrix * (proximalRightCoords(:, :, i)');
+
+    prXs = tempProximalRightCoord(1,:) + mean(HipXs);
+    prYs = tempProximalRightCoord(2,:) + mean(HipYs);
+    prZs = -tempProximalRightCoord(3,:) + min(HipZs);
+
+    PRAlphaShape = alphaShape(prXs', prYs', prZs');
+    h5 = plot(PRAlphaShape, 'FaceColor', 'black');
+    axis([-2 2 -2 2 0 1.5]);
+
 
     pause(.05);
     delete(h1)
     delete(h2);
     % delete(h3);
     delete(h4);
+    delete(h5);
    
 
 end

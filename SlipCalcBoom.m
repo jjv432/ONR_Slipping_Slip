@@ -68,8 +68,9 @@ Linkage.EndEffector.Z = z;
 Linkage.Proximal.Length = .5;
 Linkage.Proximal.Height = .1;
 Linkage.Proximal.Thickness = .1;
-Linkage.Proximal.Left.X = zeros(length(thetas), 1);
-Linkage.Proximal.Left.Z = zeros(length(thetas), 1);
+Linkage.Proximal.Left.Theta =  (3*pi/4) * ones(length(thetas), 1);
+Linkage.Proximal.Right.Theta =  (pi/4) * ones(length(thetas), 1);
+
 
 
 Linkage.Distal.Length = .25;
