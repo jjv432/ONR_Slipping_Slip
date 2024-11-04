@@ -25,9 +25,6 @@ xlabel('X')
 ylabel('Y')
 zlabel('Z')
 
-axis([-2 2 -2 2 -2 2])
-pause(1)
-
 %% Data sorting
 
 
@@ -103,6 +100,31 @@ for a = 1:length(PRtheta)
     proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 sin(PRtheta(a)) cos(PRtheta(a)); 0 -cos(PRtheta(a)) sin(PRtheta(a))];
 end
 
+%% Left Distal Link
+
+Xdl = Linkage.Distal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Ydl = Linkage.Distal.Length*[0 0 0 0 1 1 1 1];
+Zdl = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
+
+distalLeftCoord = [Xdl; Ydl; Zdl];
+
+for a = 1:length(PLtheta)
+    DLtheta = pi - atan2((-Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PLtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PLtheta(a)))));
+    distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 sin(DLtheta) cos(DLtheta); 0 -cos(DLtheta) sin(DLtheta)];
+end
+
+%% Right Distal Link
+
+Xdr = Linkage.Distal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Ydr = Linkage.Distal.Length*[0 0 0 0 1 1 1 1];
+Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
+
+distalRightCoord = [Xdr; Ydr; Zdr];
+
+for a = 1:length(PRtheta)
+    DRtheta = pi + atan2((-Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PRtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PRtheta(a)))));
+    distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 sin(DRtheta) cos(DRtheta); 0 -cos(DRtheta) sin(DRtheta)];
+end
 %% Moving the bodies
 for i = 1:10:length(alphas)
     
@@ -142,10 +164,7 @@ for i = 1:10:length(alphas)
     BoomAlphaShape = alphaShape(BoomXs', BoomYs', BoomZs');
     h1 = plot(BoomAlphaShape, 'FaceColor', 'white');
     view(45, 20);
-    axis('manual')
        
-
-
     % Hip -----------------------------
 
     temphipCoord = rotMatrix * hipCoord;
@@ -161,14 +180,14 @@ for i = 1:10:length(alphas)
 
     % End Effector ------------------------
 
-    tempeffecotrCoord = rotMatrix * (effectorCoord + [0; Linkage.EndEffector.X(i); Linkage.EndEffector.Z(i)]);
-    eeXs = tempeffecotrCoord(1,:) + mean(HipXs);
+    % This line is broken now for some reason.  It's the third dimension
+    tempeffecotrCoord = rotMatrix * (effectorCoord - [0; Linkage.EndEffector.X(i); Linkage.EndEffector.Z(i)]);
+    eeXs = tempeffecotrCoord(1,:)+ mean(HipXs);
     eeYs = tempeffecotrCoord(2,:) + mean(HipYs);
     eeZs = -tempeffecotrCoord(3,:) + min(HipZs);
 
-    % EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
-    % h3 = plot(EEAlphaShape, 'FaceColor', 'black');
-    % axis([-2 2 -2 2 0 1.5]);
+    EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
+    h3 = plot(EEAlphaShape, 'FaceColor', 'blue');
 
     % Proximal Left ------------------------
     
@@ -180,7 +199,6 @@ for i = 1:10:length(alphas)
 
     PLAlphaShape = alphaShape(plXs', plYs', plZs');
     h4 = plot(PLAlphaShape, 'FaceColor', 'black');
-    axis([-2 2 -2 2 0 1.5]);
 
     % Proximal Right ------------------------
     
@@ -192,15 +210,41 @@ for i = 1:10:length(alphas)
 
     PRAlphaShape = alphaShape(prXs', prYs', prZs');
     h5 = plot(PRAlphaShape, 'FaceColor', 'black');
+    % axis([-2 2 -2 2 0 1.5]);
+
+    % Distal Left ------------------------
+    
+    tempDistalLeftCoord = rotMatrix * (distalLeftCoords(:, :, i)');
+
+    dlXs = tempDistalLeftCoord(1,:) + mean(plXs(5:end));
+    dlYs = tempDistalLeftCoord(2,:) + mean(plYs(5:end));
+    dlZs = -tempDistalLeftCoord(3,:) + mean(plZs(5:end));
+
+    DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
+    h6 = plot(DLAlphaShape, 'FaceColor', 'white');
+
+    % Distal Right ------------------------
+    
+    tempDistalRightCoord = rotMatrix * (distalRightCoords(:, :, i)');
+
+    drXs = tempDistalRightCoord(1,:) + mean(prXs(5:end));
+    drYs = tempDistalRightCoord(2,:) + mean(prYs(5:end));
+    drZs = -tempDistalRightCoord(3,:) + mean(prZs(5:end));
+
+    DRAlphaShape = alphaShape(drXs', drYs', drZs');
+    h7 = plot(DRAlphaShape, 'FaceColor', 'white');
     axis([-2 2 -2 2 0 1.5]);
 
 
+    % Cleanup ----------------------------
     pause(.05);
     delete(h1)
     delete(h2);
-    % delete(h3);
+    delete(h3);
     delete(h4);
     delete(h5);
+    delete(h6);
+    delete(h7);
    
 
 end

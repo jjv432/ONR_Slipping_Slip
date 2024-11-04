@@ -30,6 +30,9 @@ t = readstruct("BoomData_HandActuated.json");
 
     Hip looks like it slides across boom when close to the ground. Not sure
     why
+
+    End effecter X and Y should just be calculated atp, or only can use
+    real x and z
     
 %}
 
@@ -39,8 +42,8 @@ thetas = t.orientation;
 time = t.time;
 
 %x = .15* cos(1:length(thetas));
-x = zeros(length(thetas), 1);
-z = .1* sin(.001 * 1:length(thetas)) +.10;
+x = 0*ones(length(thetas), 1);
+z = -2*.25*sind(45)* ones(length(thetas), 1);
 
 phis = height * (2*pi)/(4*4096*3); % double check
 
@@ -65,15 +68,16 @@ Linkage.EndEffector.Thickness = .1;
 Linkage.EndEffector.X = x;
 Linkage.EndEffector.Z = z;
 
-Linkage.Proximal.Length = .5;
+Linkage.Proximal.Length = .25;
 Linkage.Proximal.Height = .1;
 Linkage.Proximal.Thickness = .1;
 Linkage.Proximal.Left.Theta =  (3*pi/4) * ones(length(thetas), 1);
 Linkage.Proximal.Right.Theta =  (pi/4) * ones(length(thetas), 1);
 
-
-
 Linkage.Distal.Length = .25;
-Linkage.Distal.Thicknes = .1;
+Linkage.Distal.Height = .1;
+Linkage.Distal.Thickness = .1;
+Linkage.Distal.Left.Theta =  (3*pi/4) * ones(length(thetas), 1);
+Linkage.Distal.Right.Theta =  (pi/4) * ones(length(thetas), 1);
 
 boomPlotter(t, Platform, Boom, Hip, Linkage);
