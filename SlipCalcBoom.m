@@ -42,11 +42,9 @@ thetas = t.orientation;
 time = t.time;
 
 %x = .15* cos(1:length(thetas));
-x = 0*ones(length(thetas), 1);
-z = -2*.25*sind(45)* ones(length(thetas), 1);
+
 
 phis = height * (2*pi)/(4*4096*3); % double check
-
 %% Creating Objects for each part of the system
 Platform.OuterDiameter = 1.5;
 Platform.InnerDiameter = 1.0;
@@ -65,19 +63,21 @@ Hip.Thickness = 0.15;
 Linkage.EndEffector.Radius = .1;
 Linkage.EndEffector.Thickness = .1;
 
-Linkage.EndEffector.X = x;
-Linkage.EndEffector.Z = z;
-
 Linkage.Proximal.Length = .25;
 Linkage.Proximal.Height = .1;
 Linkage.Proximal.Thickness = .1;
-Linkage.Proximal.Left.Theta =  (3*pi/4) * ones(length(thetas), 1);
-Linkage.Proximal.Right.Theta =  (pi/4) * ones(length(thetas), 1);
+Linkage.Proximal.Left.Theta =  0 * ones(length(thetas), 1);
+Linkage.Proximal.Right.Theta =  0 * ones(length(thetas), 1);
 
-Linkage.Distal.Length = .25;
+Linkage.Distal.Length = .57;
 Linkage.Distal.Height = .1;
 Linkage.Distal.Thickness = .1;
-Linkage.Distal.Left.Theta =  (3*pi/4) * ones(length(thetas), 1);
-Linkage.Distal.Right.Theta =  (pi/4) * ones(length(thetas), 1);
+
+x = 0*ones(length(thetas), 1);
+z = -sqrt(Linkage.Distal.Length^2 - Linkage.Proximal.Length^2) * ones(length(thetas), 1);
+
+
+Linkage.EndEffector.X = x;
+Linkage.EndEffector.Z = z;
 
 boomPlotter(t, Platform, Boom, Hip, Linkage);

@@ -83,7 +83,7 @@ proximalLeftCoord = [Xpl; Ypl; Zpl];
 PLtheta = Linkage.Proximal.Left.Theta;
 
 for a = 1:length(PLtheta)
-    proximalLeftCoords(:, :, a) = proximalLeftCoord' * [1 0 0; 0 sin(PLtheta(a)) cos(PLtheta(a)); 0 -cos(PLtheta(a)) sin(PLtheta(a))];
+    proximalLeftCoords(:, :, a) = proximalLeftCoord' * [1 0 0; 0 cos(PLtheta(a)) sin(PLtheta(a)); 0 -sin(PLtheta(a)) cos(PLtheta(a))];
 end
 
 %% Right Proximal Link
@@ -97,7 +97,7 @@ proximalRightCoord = [Xpr; Ypr; Zpr];
 PRtheta = Linkage.Proximal.Right.Theta;
 
 for a = 1:length(PRtheta)
-    proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 sin(PRtheta(a)) cos(PRtheta(a)); 0 -cos(PRtheta(a)) sin(PRtheta(a))];
+    proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 cos(PRtheta(a)) sin(PRtheta(a)); 0 -sin(PRtheta(a)) cos(PRtheta(a))];
 end
 
 %% Left Distal Link
@@ -109,7 +109,7 @@ Zdl = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalLeftCoord = [Xdl; Ydl; Zdl];
 
 for a = 1:length(PLtheta)
-    DLtheta = pi - atan2((-Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PLtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PLtheta(a)))));
+    DLtheta = -pi/2 - atan2((Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PLtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PLtheta(a)))));
     distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 sin(DLtheta) cos(DLtheta); 0 -cos(DLtheta) sin(DLtheta)];
 end
 
@@ -122,7 +122,7 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
-    DRtheta = pi + atan2((-Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PRtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PRtheta(a)))));
+    DRtheta = pi/2 + atan2((Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PRtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PRtheta(a)))));
     distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 sin(DRtheta) cos(DRtheta); 0 -cos(DRtheta) sin(DRtheta)];
 end
 %% Moving the bodies
