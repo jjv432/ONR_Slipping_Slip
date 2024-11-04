@@ -12,35 +12,22 @@ t = readstruct("BoomData_HandActuated.json");
 
 %% TODO Notes
 %{
-    
-    Make alpha shapes end on the first element (wrap them around) to make
-    it not do the clipping thing?
-
-    Math, including fixing orientation (off by about a quarter)
 
     Real measurements of everything
 
-    Make objects that are round closer to round (instead of squares/ low-
-    res polys)
+    Fix angle issues
 
-    Consider running this, saving all of the alpha shapes, THEN plotting.
-    This will allow for realistic dts as there will be (relatively) little
-    processing time, and the delay can just be set to the dt of the boom
-    measurements instead of some arbitrary value.
+    Get real data for x, z, and thetas
 
-    Hip looks like it slides across boom when close to the ground. Not sure
-    why
-
-    End effecter X and Y should just be calculated atp, or only can use
-    real x and z
+    Make the links in the correct position relative to the hip (?)
     
 %}
 
 %% Sorting Data
-height = t.height;
-thetas = t.orientation* 10; % Why off by this factor?
 time = t.time;
+height = t.height;
 
+thetas = t.orientation* 10; % Why off by this factor?
 phis = height * (2*pi)/(4*4096*3); % double check
 %% Creating Objects for each part of the system
 Platform.OuterDiameter = 1.5;
@@ -77,4 +64,4 @@ z = -sqrt(Linkage.Distal.Length^2 - Linkage.Proximal.Length^2) * ones(length(the
 Linkage.EndEffector.X = x;
 Linkage.EndEffector.Z = z;
 
-boomPlotter(t, Platform, Boom, Hip, Linkage);
+boomPlotter(Platform, Boom, Hip, Linkage);

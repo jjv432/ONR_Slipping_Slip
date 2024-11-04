@@ -1,4 +1,4 @@
-function boomPlotter(data, Platform ,Boom, Hip, Linkage)
+function boomPlotter(Platform ,Boom, Hip, Linkage)
 
 %% Platform
 plat_angles = linspace(0, 2*pi, 100);
@@ -28,7 +28,7 @@ zlabel('Z')
 %% Data sorting
 
 BoomAnglesGround = Boom.Theta;
-BoomAnglesVertical = data.tilt/(4*4960); %CHECK THIS!
+BoomAnglesVertical = Boom.Phi; %CHECK THIS!
 
 %https://en.wikipedia.org/wiki/Rotation_matrix
 alphas = BoomAnglesGround;
@@ -73,7 +73,7 @@ effectorCoord = [Xee; Yee; Zee];
 
 %% Left Proximal Link
 
-Xpl = Linkage.Proximal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Xpl = Linkage.Proximal.Thickness*[0, 0, 1, 1, 1, 1, 0, 0];
 Ypl = Linkage.Proximal.Length*[0 0 0 0 -1 -1 -1 -1];
 Zpl = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 
@@ -87,7 +87,7 @@ end
 
 %% Right Proximal Link
 
-Xpr = Linkage.Proximal.Thickness*[-.5, -.5, .5, .5, .5, .5, -.5, -.5];
+Xpr = Linkage.Proximal.Thickness*[0, 0, 1, 1, 1, 1, 0, 0];
 Ypr = Linkage.Proximal.Length*[0 0 0 0 1 1 1 1];
 Zpr = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 
@@ -192,8 +192,8 @@ for i = 1:10:length(alphas)
     
     tempProximalLeftCoord = rotMatrix * (proximalLeftCoords(:, :, i)');
 
-    plXs = tempProximalLeftCoord(1,:) + mean(HipXs);
-    plYs = tempProximalLeftCoord(2,:) + mean(HipYs);
+    plXs = tempProximalLeftCoord(1,:) + mean(HipXs(5:end));
+    plYs = tempProximalLeftCoord(2,:) + mean(HipYs(5:end));
     plZs = -tempProximalLeftCoord(3,:) + min(HipZs);
 
     PLAlphaShape = alphaShape(plXs', plYs', plZs');
@@ -203,8 +203,8 @@ for i = 1:10:length(alphas)
     
     tempProximalRightCoord = rotMatrix * (proximalRightCoords(:, :, i)');
 
-    prXs = tempProximalRightCoord(1,:) + mean(HipXs);
-    prYs = tempProximalRightCoord(2,:) + mean(HipYs);
+    prXs = tempProximalRightCoord(1,:) + mean(HipXs(5:end));
+    prYs = tempProximalRightCoord(2,:) + mean(HipYs(5:end));
     prZs = -tempProximalRightCoord(3,:) + min(HipZs);
 
     PRAlphaShape = alphaShape(prXs', prYs', prZs');
