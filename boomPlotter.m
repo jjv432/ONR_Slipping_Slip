@@ -27,8 +27,7 @@ zlabel('Z')
 
 %% Data sorting
 
-
-BoomAnglesGround = data.orientation;
+BoomAnglesGround = Boom.Theta;
 BoomAnglesVertical = data.tilt/(4*4960); %CHECK THIS!
 
 %https://en.wikipedia.org/wiki/Rotation_matrix
@@ -163,15 +162,15 @@ for i = 1:10:length(alphas)
 
     BoomAlphaShape = alphaShape(BoomXs', BoomYs', BoomZs');
     h1 = plot(BoomAlphaShape, 'FaceColor', 'white');
-    view(45, 20);
+    %view(45, 20);
        
     % Hip -----------------------------
 
     temphipCoord = rotMatrix * hipCoord;
-    HipXs = temphipCoord(1,:) + max(BoomXs);
-    HipYs = temphipCoord(2,:) + max(BoomYs);
+    HipXs = temphipCoord(1,:) + mean(BoomXs(5:end));
+    HipYs = temphipCoord(2,:) + mean(BoomYs(5:end));
     HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end));
-    % only doing the last four for Zs because those are the four points at
+    % only doing the last four because those are the four points at
     % the end of the boom
 
     HipAlphaShape = alphaShape(HipXs', HipYs', HipZs');

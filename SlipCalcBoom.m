@@ -38,11 +38,8 @@ t = readstruct("BoomData_HandActuated.json");
 
 %% Sorting Data
 height = t.height;
-thetas = t.orientation;
+thetas = t.orientation* 10; % Why off by this factor?
 time = t.time;
-
-%x = .15* cos(1:length(thetas));
-
 
 phis = height * (2*pi)/(4*4096*3); % double check
 %% Creating Objects for each part of the system
