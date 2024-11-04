@@ -169,35 +169,23 @@ for i = 1:10:length(alphas)
     temphipCoord = rotMatrix * hipCoord;
     HipXs = temphipCoord(1,:) + mean(BoomXs(5:end));
     HipYs = temphipCoord(2,:) + mean(BoomYs(5:end));
-    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end));
+    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end)) + Hip.Height/2;
     % only doing the last four because those are the four points at
     % the end of the boom
 
     HipAlphaShape = alphaShape(HipXs', HipYs', HipZs');
     h2 = plot(HipAlphaShape, 'FaceColor', 'white');
     
-
-    % End Effector ------------------------
-
-    % This line is broken now for some reason.  It's the third dimension
-    tempeffecotrCoord = rotMatrix * (effectorCoord - [0; Linkage.EndEffector.X(i); Linkage.EndEffector.Z(i)]);
-    eeXs = tempeffecotrCoord(1,:)+ mean(HipXs);
-    eeYs = tempeffecotrCoord(2,:) + mean(HipYs);
-    eeZs = -tempeffecotrCoord(3,:) + min(HipZs);
-
-    EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
-    h3 = plot(EEAlphaShape, 'FaceColor', 'blue');
-
     % Proximal Left ------------------------
     
     tempProximalLeftCoord = rotMatrix * (proximalLeftCoords(:, :, i)');
 
     plXs = tempProximalLeftCoord(1,:) + mean(HipXs(5:end));
     plYs = tempProximalLeftCoord(2,:) + mean(HipYs(5:end));
-    plZs = -tempProximalLeftCoord(3,:) + min(HipZs);
+    plZs = -tempProximalLeftCoord(3,:) + min(HipZs) + .1*Hip.Height; %FIND THE REAL VALUE
 
     PLAlphaShape = alphaShape(plXs', plYs', plZs');
-    h4 = plot(PLAlphaShape, 'FaceColor', 'black');
+    h3 = plot(PLAlphaShape, 'FaceColor', 'black');
 
     % Proximal Right ------------------------
     
@@ -205,10 +193,10 @@ for i = 1:10:length(alphas)
 
     prXs = tempProximalRightCoord(1,:) + mean(HipXs(5:end));
     prYs = tempProximalRightCoord(2,:) + mean(HipYs(5:end));
-    prZs = -tempProximalRightCoord(3,:) + min(HipZs);
+    prZs = -tempProximalRightCoord(3,:) + min(HipZs) + .1*Hip.Height; %FIND THE REAL VALUE
 
     PRAlphaShape = alphaShape(prXs', prYs', prZs');
-    h5 = plot(PRAlphaShape, 'FaceColor', 'black');
+    h4 = plot(PRAlphaShape, 'FaceColor', 'black');
     % axis([-2 2 -2 2 0 1.5]);
 
     % Distal Left ------------------------
@@ -220,7 +208,7 @@ for i = 1:10:length(alphas)
     dlZs = -tempDistalLeftCoord(3,:) + mean(plZs(5:end));
 
     DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
-    h6 = plot(DLAlphaShape, 'FaceColor', 'white');
+    h5 = plot(DLAlphaShape, 'FaceColor', 'white');
 
     % Distal Right ------------------------
     
@@ -231,8 +219,19 @@ for i = 1:10:length(alphas)
     drZs = -tempDistalRightCoord(3,:) + mean(prZs(5:end));
 
     DRAlphaShape = alphaShape(drXs', drYs', drZs');
-    h7 = plot(DRAlphaShape, 'FaceColor', 'white');
-    axis([-2 2 -2 2 0 1.5]);
+    h6 = plot(DRAlphaShape, 'FaceColor', 'white');
+    axis([-2 2 -2 2 0 2]);
+
+    % End Effector ------------------------
+
+    % This line is broken now for some reason.  It's the third dimension
+    tempeffecotrCoord = rotMatrix * (effectorCoord - [0; Linkage.EndEffector.X(i); Linkage.EndEffector.Z(i)]);
+    eeXs = tempeffecotrCoord(1,:)+ mean([prXs plXs]);
+    eeYs = tempeffecotrCoord(2,:) + mean([prYs plYs]);
+    eeZs = -tempeffecotrCoord(3,:) + min(HipZs);
+
+    EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
+    h7 = plot(EEAlphaShape, 'FaceColor', 'blue');
 
 
     % Cleanup ----------------------------

@@ -18,8 +18,6 @@ t = readstruct("BoomData_HandActuated.json");
     Fix angle issues
 
     Get real data for x, z, and thetas
-
-    Make the links in the correct position relative to the hip (?)
     
 %}
 
@@ -37,7 +35,7 @@ Platform.Thickness = 0.1; %height between bottom of boom to top of platform
 Boom.VerticalDisplacement = .75; % meters %MEASURE
 Boom.Length = 1.25; % m 
 Boom.Diameter = .025; % m
-Boom.Phi = phis;
+Boom.Phi = phis; % Right?
 Boom.Theta = thetas;
 
 Hip.Height = .5; 
