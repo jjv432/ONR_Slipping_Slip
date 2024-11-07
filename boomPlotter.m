@@ -116,16 +116,21 @@ Zdl = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalLeftCoord = [Xdl; Ydl; Zdl];
 
 for a = 1:length(PLtheta)
-    %DLtheta = atan((Linkage.EndEffector.Z(a) - Linkage.Proximal.Length * sin(PLtheta(a)))/ Linkage.Distal.Length)/ ((Linkage.EndEffector.X(a) - Linkage.Proximal.Length* cos(PLtheta(a))/Linkage.Distal.Length));
-    % DLtheta = pi/2 + mean([PLtheta(a) PRtheta(a)]) - PLtheta(a) + asin( mod(sin(pi/2 - PLtheta(a)) * Linkage.Distal.Length / (sqrt(Linkage.EndEffector.X(a)^2 + Linkage.EndEffector.Z(a)^2)), 1) );
-    phi (a) = (pi/2) -mean([PLtheta(a) PRtheta(a)]);
-    % DLtheta = pi + asin(mod( ((Linkage.Proximal.Length/Linkage.EndEffector.Z(a)) * sin(PLtheta(a) - phi)) , 1) ) + phi;
-    % DLtheta = DLtheta;
-    % DLthetas(a) = DLtheta;
-    % 
-    % distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) sin(DLtheta); 0 -sin(DLtheta) cos(DLtheta)];
-    DLtheta = acos(-cos(PLtheta(a)) * Linkage.Proximal.Length/Linkage.Distal.Length); %Local
-    DLtheta = DLtheta + phi(a); % Hip frame
+
+    phi (a) = -mean([PLtheta(a) PRtheta(a)]);
+    
+    L1 = Linkage.Proximal.Length;
+    L2 = Linkage.Distal.Length;
+
+    alpha = PLtheta(a)- phi(a);
+    sigma = pi - alpha;
+    beta = asin(sin(sigma) * L1/L2);
+    % zeta = sigma + beta - pi;
+    % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
+    %DLtheta = acos( mod((L3*cos(phi(a)) + L1*cos(PLtheta(a))) / (-L2), 1));
+    DLtheta = phi(a) + pi + beta;
+
+   
     distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) sin(DLtheta); 0 -sin(DLtheta) cos(DLtheta)];
 end
 
@@ -138,8 +143,18 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
-    DRtheta = acos(-cos(PRtheta(a)) * Linkage.Proximal.Length/Linkage.Distal.Length); % local frame
-    DRtheta = DRtheta + phi(a); % Hip frame
+    L1 = Linkage.Proximal.Length;
+    L2 = Linkage.Distal.Length;
+
+    alpha = PRtheta(a)- phi(a);
+    sigma = pi - alpha;
+    beta = asin(sin(sigma) * L1/L2);
+    % zeta = sigma + beta - pi;
+    % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
+    %DLtheta = acos( mod((L3*cos(phi(a)) + L1*cos(PLtheta(a))) / (-L2), 1));
+    DRtheta = phi(a) + pi + beta;
+
+    %DRtheta = acos(mod( (L3*cos(phi(a)) + L1*cos(PRtheta(a))) / (-L2) , 1));
     distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 cos(DRtheta) sin(DRtheta); 0 -sin(DRtheta) cos(DRtheta)];
 end
 %% Moving the bodies
