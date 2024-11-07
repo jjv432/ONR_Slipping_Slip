@@ -1,5 +1,13 @@
 function boomPlotter(Platform ,Boom, Hip, Linkage)
 
+
+%{
+
+ **** Be careful with multiple translations, the lenghts are not rotated
+ and therefore are not in the right frame.  Need to make these adjustments
+ before the rotation occurs
+
+%}
 %% Platform
 plat_angles = linspace(0, 2*pi, 100);
 
@@ -175,7 +183,7 @@ for i = 1:10:length(alphas)
     temphipCoord = rotMatrix * hipCoord;
     HipXs = temphipCoord(1,:) + mean(BoomXs(5:end));
     HipYs = temphipCoord(2,:) + mean(BoomYs(5:end));
-    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end)) + Hip.Height/2;
+    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end));
     % only doing the last four because those are the four points at
     % the end of the boom
 
@@ -188,7 +196,7 @@ for i = 1:10:length(alphas)
 
     plXs = tempProximalLeftCoord(1,:) + mean(HipXs(5:end));
     plYs = tempProximalLeftCoord(2,:) + mean(HipYs(5:end));
-    plZs = -tempProximalLeftCoord(3,:) + min(HipZs) + .1*Hip.Height; %FIND THE REAL VALUE
+    plZs = -tempProximalLeftCoord(3,:) + mean(HipZs(5:end));% + .1*Hip.Height; %FIND THE REAL VALUE
 
     PLAlphaShape = alphaShape(plXs', plYs', plZs');
     h3 = plot(PLAlphaShape, 'FaceColor', 'black');
@@ -199,7 +207,7 @@ for i = 1:10:length(alphas)
 
     prXs = tempProximalRightCoord(1,:) + mean(HipXs(5:end));
     prYs = tempProximalRightCoord(2,:) + mean(HipYs(5:end));
-    prZs = -tempProximalRightCoord(3,:) + min(HipZs) + .1*Hip.Height; %FIND THE REAL VALUE
+    prZs = -tempProximalRightCoord(3,:) + mean(HipZs(5:end)); %+ .1*Hip.Height; %FIND THE REAL VALUE
 
     PRAlphaShape = alphaShape(prXs', prYs', prZs');
     h4 = plot(PRAlphaShape, 'FaceColor', 'black');
@@ -214,7 +222,7 @@ for i = 1:10:length(alphas)
     dlZs = tempDistalLeftCoord(3,:) + mean(plZs(5:end));
 
     DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
-    h5 = plot(DLAlphaShape, 'FaceColor', 'white');
+    % h5 = plot(DLAlphaShape, 'FaceColor', 'white');
 
     % Distal Right ------------------------
     
@@ -225,7 +233,7 @@ for i = 1:10:length(alphas)
     drZs = tempDistalRightCoord(3,:) + mean(prZs(5:end));
 
     DRAlphaShape = alphaShape(drXs', drYs', drZs');
-    h6 = plot(DRAlphaShape, 'FaceColor', 'white');
+    % h6 = plot(DRAlphaShape, 'FaceColor', 'white');
     axis([-2 2 -2 2 0 2]);
 
     % End Effector ------------------------
@@ -237,18 +245,18 @@ for i = 1:10:length(alphas)
     eeZs = tempeffecotrCoord(3,:) + mean(dlZs(5:end));
 
     EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
-    h7 = plot(EEAlphaShape, 'FaceColor', 'blue');
+    % h7 = plot(EEAlphaShape, 'FaceColor', 'blue');
 
 
     % Cleanup ----------------------------
-    pause(.05);
+    pause(.1);
     delete(h1)
     delete(h2);
     delete(h3);
     delete(h4);
-    delete(h5);
-    delete(h6);
-    delete(h7);
+    % delete(h5);
+    % delete(h6);
+    % delete(h7);
    
 
 end

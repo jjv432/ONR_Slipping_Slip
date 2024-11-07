@@ -38,6 +38,8 @@ t = readstruct("BoomData_HandActuated.json");
     with the function and figure out how to find those angles.  Take
     advantage of Derek's function returning theta and R between the links
     instead of just X and Y?
+
+    Distal link rotation matrix is off!
 %}
 
 %% Sorting Data
@@ -67,8 +69,8 @@ Linkage.EndEffector.Thickness = .1;
 Linkage.Proximal.Length = .25;
 Linkage.Proximal.Height = .1;
 Linkage.Proximal.Thickness = .1;
-Linkage.Proximal.Left.Theta =  pi* ones(length(thetas), 1);
-Linkage.Proximal.Right.Theta =  0* ones(length(thetas), 1);
+Linkage.Proximal.Left.Theta =  3*pi/4* ones(length(thetas), 1);
+Linkage.Proximal.Right.Theta =  pi/4* ones(length(thetas), 1);
 
 Linkage.Distal.Length = .57;
 Linkage.Distal.Height = .1;
