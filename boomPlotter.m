@@ -67,14 +67,14 @@ hipCoord = [Xh; Yh; Zh];
 
 Xee = Linkage.EndEffector.Thickness*[-.5, -.5, -.5, -.5, -.5, .5, .5, .5, .5, .5];
 Yee = Linkage.EndEffector.Radius*[cos(0), cos(pi/4), cos(pi/2), cos(3*pi/4), cos(pi), cos(pi), cos(3*pi/4), cos(pi/2), cos(pi/4), cos(0)];
-Zee = Linkage.EndEffector.Radius*[sin(0), sin(pi/4), sin(pi/2), sin(3*pi/4), sin(pi), sin(pi), sin(3*pi/4), sin(pi/2), sin(pi/4), sin(0)];
+Zee = -Linkage.EndEffector.Radius*[sin(0), sin(pi/4), sin(pi/2), sin(3*pi/4), sin(pi), sin(pi), sin(3*pi/4), sin(pi/2), sin(pi/4), sin(0)];
 
 effectorCoord = [Xee; Yee; Zee];
 
 %% Left Proximal Link
 
 Xpl = Linkage.Proximal.Thickness*[0, 0, 1, 1, 1, 1, 0, 0];
-Ypl = Linkage.Proximal.Length*[0 0 0 0 -1 -1 -1 -1];
+Ypl = Linkage.Proximal.Length*[0 0 0 0 1 1 1 1];
 Zpl = Linkage.Proximal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 
 proximalLeftCoord = [Xpl; Ypl; Zpl];
@@ -82,7 +82,7 @@ proximalLeftCoord = [Xpl; Ypl; Zpl];
 PLtheta = Linkage.Proximal.Left.Theta;
 
 for a = 1:length(PLtheta)
-    proximalLeftCoords(:, :, a) = proximalLeftCoord' * [1 0 0; 0 cos(PLtheta(a)) sin(PLtheta(a)); 0 -sin(PLtheta(a)) cos(PLtheta(a))];
+    proximalLeftCoords(:, :, a) = proximalLeftCoord' * [1 0 0; 0 cos(PLtheta(a)) -sin(PLtheta(a)); 0 sin(PLtheta(a)) cos(PLtheta(a))];
 end
 
 %% Right Proximal Link
@@ -96,7 +96,7 @@ proximalRightCoord = [Xpr; Ypr; Zpr];
 PRtheta = Linkage.Proximal.Right.Theta;
 
 for a = 1:length(PRtheta)
-    proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 cos(PRtheta(a)) sin(PRtheta(a)); 0 -sin(PRtheta(a)) cos(PRtheta(a))];
+    proximalRightCoords(:, :, a) = proximalRightCoord' * [1 0 0; 0 cos(PRtheta(a)) -sin(PRtheta(a)); 0 sin(PRtheta(a)) cos(PRtheta(a))];
 end
 
 %% Left Distal Link
@@ -108,8 +108,13 @@ Zdl = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalLeftCoord = [Xdl; Ydl; Zdl];
 
 for a = 1:length(PLtheta)
-    DLtheta = -pi/2 - atan2((Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PLtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PLtheta(a)))));
-    distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 sin(DLtheta) cos(DLtheta); 0 -cos(DLtheta) sin(DLtheta)];
+    %DLtheta = atan((Linkage.EndEffector.Z(a) - Linkage.Proximal.Length * sin(PLtheta(a)))/ Linkage.Distal.Length)/ ((Linkage.EndEffector.X(a) - Linkage.Proximal.Length* cos(PLtheta(a))/Linkage.Distal.Length));
+    DLtheta = (pi - PLtheta(a)) + asin( mod(cos(PLtheta(a)) * Linkage.Distal.Length / (sqrt(Linkage.EndEffector.X(a)^2 + Linkage.EndEffector.Z(a)^2)), 1) );
+    DLtheta = -DLtheta;
+    
+    AAA(a) = DLtheta;
+    
+    distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) sin(DLtheta); 0 -sin(DLtheta) cos(DLtheta)];
 end
 
 %% Right Distal Link
@@ -121,8 +126,9 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
-    DRtheta = pi/2 + atan2((Linkage.EndEffector.Z(a) - abs(Linkage.Proximal.Length * sin(PRtheta(a)))), (Linkage.EndEffector.X(a) - abs(Linkage.Proximal.Length * cos(PRtheta(a)))));
-    distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 sin(DRtheta) cos(DRtheta); 0 -cos(DRtheta) sin(DRtheta)];
+    DRtheta = pi- AAA(a);   
+    
+    distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 cos(DRtheta) sin(DRtheta); 0 -sin(DRtheta) cos(DRtheta)];
 end
 %% Moving the bodies
 for i = 1:10:length(alphas)
@@ -205,7 +211,7 @@ for i = 1:10:length(alphas)
 
     dlXs = tempDistalLeftCoord(1,:) + mean(plXs(5:end));
     dlYs = tempDistalLeftCoord(2,:) + mean(plYs(5:end));
-    dlZs = -tempDistalLeftCoord(3,:) + mean(plZs(5:end));
+    dlZs = tempDistalLeftCoord(3,:) + mean(plZs(5:end));
 
     DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
     h5 = plot(DLAlphaShape, 'FaceColor', 'white');
@@ -216,7 +222,7 @@ for i = 1:10:length(alphas)
 
     drXs = tempDistalRightCoord(1,:) + mean(prXs(5:end));
     drYs = tempDistalRightCoord(2,:) + mean(prYs(5:end));
-    drZs = -tempDistalRightCoord(3,:) + mean(prZs(5:end));
+    drZs = tempDistalRightCoord(3,:) + mean(prZs(5:end));
 
     DRAlphaShape = alphaShape(drXs', drYs', drZs');
     h6 = plot(DRAlphaShape, 'FaceColor', 'white');
@@ -225,10 +231,10 @@ for i = 1:10:length(alphas)
     % End Effector ------------------------
 
     % This line is broken now for some reason.  It's the third dimension
-    tempeffecotrCoord = rotMatrix * (effectorCoord - [0; Linkage.EndEffector.X(i); Linkage.EndEffector.Z(i)]);
-    eeXs = tempeffecotrCoord(1,:)+ mean([prXs plXs]);
-    eeYs = tempeffecotrCoord(2,:) + mean([prYs plYs]);
-    eeZs = -tempeffecotrCoord(3,:) + min(HipZs);
+    tempeffecotrCoord = rotMatrix * effectorCoord;
+    eeXs = tempeffecotrCoord(1,:)+ mean([HipXs(5:end) HipXs(5:end)]);
+    eeYs = tempeffecotrCoord(2,:) + mean([HipYs(5:end) HipYs(5:end)]);
+    eeZs = tempeffecotrCoord(3,:) + mean(dlZs(5:end));
 
     EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
     h7 = plot(EEAlphaShape, 'FaceColor', 'blue');
