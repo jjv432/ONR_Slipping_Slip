@@ -117,11 +117,14 @@ distalLeftCoord = [Xdl; Ydl; Zdl];
 
 for a = 1:length(PLtheta)
     %DLtheta = atan((Linkage.EndEffector.Z(a) - Linkage.Proximal.Length * sin(PLtheta(a)))/ Linkage.Distal.Length)/ ((Linkage.EndEffector.X(a) - Linkage.Proximal.Length* cos(PLtheta(a))/Linkage.Distal.Length));
-    DLtheta = (pi - PLtheta(a)) + asin( mod(cos(PLtheta(a)) * Linkage.Distal.Length / (sqrt(Linkage.EndEffector.X(a)^2 + Linkage.EndEffector.Z(a)^2)), 1) );
-    DLtheta = -DLtheta;
-    
-    AAA(a) = DLtheta;
-    
+    % DLtheta = pi/2 + mean([PLtheta(a) PRtheta(a)]) - PLtheta(a) + asin( mod(sin(pi/2 - PLtheta(a)) * Linkage.Distal.Length / (sqrt(Linkage.EndEffector.X(a)^2 + Linkage.EndEffector.Z(a)^2)), 1) );
+    % phi = mean([PLtheta(a) PRtheta(a)]);
+    % DLtheta = pi + asin(mod( ((Linkage.Proximal.Length/Linkage.EndEffector.Z(a)) * sin(PLtheta(a) - phi)) , 1) ) + phi;
+    % DLtheta = DLtheta;
+    % DLthetas(a) = DLtheta;
+    % 
+    % distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) sin(DLtheta); 0 -sin(DLtheta) cos(DLtheta)];
+    DLtheta = acos(-cos(PLtheta(a)) * Linkage.Proximal.Length/Linkage.Distal.Length);
     distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) sin(DLtheta); 0 -sin(DLtheta) cos(DLtheta)];
 end
 
@@ -134,9 +137,7 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
-    % this is where I can mirror it about the angle in between the motors
-    DRtheta = pi- AAA(a);   
-    
+    DRtheta = acos(-cos(PRtheta(a)) * Linkage.Proximal.Length/Linkage.Distal.Length);
     distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 cos(DRtheta) sin(DRtheta); 0 -sin(DRtheta) cos(DRtheta)];
 end
 %% Moving the bodies
