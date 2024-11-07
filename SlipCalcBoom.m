@@ -69,7 +69,7 @@ Linkage.EndEffector.Thickness = .1;
 Linkage.Proximal.Length = .25;
 Linkage.Proximal.Height = .1;
 Linkage.Proximal.Thickness = .1;
-Linkage.Proximal.Left.Theta =  3*pi/4* ones(length(thetas), 1);
+Linkage.Proximal.Left.Theta =  5*pi/4* ones(length(thetas), 1);
 Linkage.Proximal.Right.Theta =  pi/4* ones(length(thetas), 1);
 
 Linkage.Distal.Length = .57;

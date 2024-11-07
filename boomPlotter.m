@@ -134,6 +134,7 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
+    % this is where I can mirror it about the angle in between the motors
     DRtheta = pi- AAA(a);   
     
     distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 cos(DRtheta) sin(DRtheta); 0 -sin(DRtheta) cos(DRtheta)];
@@ -219,10 +220,10 @@ for i = 1:10:length(alphas)
 
     dlXs = tempDistalLeftCoord(1,:) + mean(plXs(5:end));
     dlYs = tempDistalLeftCoord(2,:) + mean(plYs(5:end));
-    dlZs = tempDistalLeftCoord(3,:) + mean(plZs(5:end));
+    dlZs = -tempDistalLeftCoord(3,:) + mean(plZs(5:end));
 
     DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
-    % h5 = plot(DLAlphaShape, 'FaceColor', 'white');
+    h5 = plot(DLAlphaShape, 'FaceColor', 'white');
 
     % Distal Right ------------------------
     
@@ -230,10 +231,10 @@ for i = 1:10:length(alphas)
 
     drXs = tempDistalRightCoord(1,:) + mean(prXs(5:end));
     drYs = tempDistalRightCoord(2,:) + mean(prYs(5:end));
-    drZs = tempDistalRightCoord(3,:) + mean(prZs(5:end));
+    drZs = -tempDistalRightCoord(3,:) + mean(prZs(5:end));
 
     DRAlphaShape = alphaShape(drXs', drYs', drZs');
-    % h6 = plot(DRAlphaShape, 'FaceColor', 'white');
+    h6 = plot(DRAlphaShape, 'FaceColor', 'white');
     axis([-2 2 -2 2 0 2]);
 
     % End Effector ------------------------
@@ -254,8 +255,8 @@ for i = 1:10:length(alphas)
     delete(h2);
     delete(h3);
     delete(h4);
-    % delete(h5);
-    % delete(h6);
+    delete(h5);
+    delete(h6);
     % delete(h7);
    
 
