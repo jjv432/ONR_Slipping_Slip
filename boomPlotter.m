@@ -122,8 +122,8 @@ for a = 1:length(PLtheta)
     L1 = Linkage.Proximal.Length;
     L2 = Linkage.Distal.Length;
 
-    alpha = PLtheta(a)- phi(a);
-    sigma = pi - alpha;
+    alpha = abs(PLtheta(a)- phi(a));
+    sigma = abs(pi - alpha);
     beta = asin(sin(sigma) * L1/L2);
     % zeta = sigma + beta - pi;
     % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
