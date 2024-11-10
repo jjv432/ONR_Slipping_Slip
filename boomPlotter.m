@@ -117,7 +117,7 @@ distalLeftCoord = [Xdl; Ydl; Zdl];
 
 for a = 1:length(PLtheta)
 
-    phi (a) = -mean([PLtheta(a) PRtheta(a)]);
+    phi (a) = mean([PLtheta(a) PRtheta(a)]);
     
     L1 = Linkage.Proximal.Length;
     L2 = Linkage.Distal.Length;
@@ -129,6 +129,7 @@ for a = 1:length(PLtheta)
     % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
     %DLtheta = acos( mod((L3*cos(phi(a)) + L1*cos(PLtheta(a))) / (-L2), 1));
     DLtheta = ( phi(a) + pi + beta);
+   
 
    
     distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) -sin(DLtheta); 0 sin(DLtheta) cos(DLtheta)];
