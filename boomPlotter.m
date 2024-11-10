@@ -115,19 +115,23 @@ Zdl = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 
 distalLeftCoord = [Xdl; Ydl; Zdl];
 
-L1 = Linkage.Proximal.Length;
-L2 = Linkage.Distal.Length;
-
-
 for a = 1:length(PLtheta)
-    
-    alpha = .5 * (pi - PLtheta(a) - PRtheta(a));
-    gamma = asin((L1/L2) *sin(alpha));
-    phi = pi - alpha - gamma;
-    DLtheta = pi - PRtheta(a) + phi;
-    distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) -sin(DLtheta); 0 sin(DLtheta) cos(DLtheta)];
 
-  
+    phi (a) = -mean([PLtheta(a) PRtheta(a)]);
+    
+    L1 = Linkage.Proximal.Length;
+    L2 = Linkage.Distal.Length;
+
+    alpha = PLtheta(a)- phi(a);
+    sigma = pi - alpha;
+    beta = asin(sin(sigma) * L1/L2);
+    % zeta = sigma + beta - pi;
+    % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
+    %DLtheta = acos( mod((L3*cos(phi(a)) + L1*cos(PLtheta(a))) / (-L2), 1));
+    DLtheta = ( phi(a) + pi + beta);
+
+   
+    distalLeftCoords(:, :, a) = distalLeftCoord' * [1 0 0; 0 cos(DLtheta) -sin(DLtheta); 0 sin(DLtheta) cos(DLtheta)];
 end
 
 %% Right Distal Link
@@ -139,13 +143,19 @@ Zdr = Linkage.Distal.Height*[-.5 .5 .5 -.5 -.5 .5 .5 -.5];
 distalRightCoord = [Xdr; Ydr; Zdr];
 
 for a = 1:length(PRtheta)
+    L1 = Linkage.Proximal.Length;
+    L2 = Linkage.Distal.Length;
 
-    alpha = .5 * (pi - PLtheta(a) - PRtheta(a));
-    gamma = asin((L1/L2) *sin(alpha));
-    phi = pi - alpha - gamma;
-    DRtheta = pi - PRtheta(a) + phi;
+    alpha = PRtheta(a)- phi(a);
+    sigma = pi - alpha;
+    beta = asin(sin(sigma) * L1/L2);
+    % zeta = sigma + beta - pi;
+    % L3 = sqrt(L1^2 + L2^2 - 2*L1*L2*cos(zeta));
+    %DLtheta = acos( mod((L3*cos(phi(a)) + L1*cos(PLtheta(a))) / (-L2), 1));
+    DRtheta = (phi(a) + pi + beta);
+
+    %DRtheta = acos(mod( (L3*cos(phi(a)) + L1*cos(PRtheta(a))) / (-L2) , 1));
     distalRightCoords(:, :, a) = distalRightCoord' * [1 0 0; 0 cos(DRtheta) -sin(DRtheta); 0 sin(DRtheta) cos(DRtheta)];
-
 end
 %% Moving the bodies
 for i = 1:10:length(alphas)
