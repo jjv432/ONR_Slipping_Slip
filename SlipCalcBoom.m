@@ -76,15 +76,9 @@ Linkage.Distal.Length = .57;
 Linkage.Distal.Height = .1;
 Linkage.Distal.Thickness = .1;
 
-% Returns x and z as if theta is up!(Quadrant 1 and 2)
-for g = 1:length(Linkage.Proximal.Left.Theta)
-    [x(g), z(g)] = FiveBarFK_Symmetric_Coaxial(Linkage.Proximal.Right.Theta(g),Linkage.Proximal.Left.Theta(g),Linkage.Proximal.Length,Linkage.Distal.Length);
-end
+[x, z, Phi, R] = FiveBarFK_Symmetric_Coaxial(Linkage.Proximal.Right.Theta,Linkage.Proximal.Left.Theta,Linkage.Proximal.Length,Linkage.Distal.Length);
 
-
-% Both need to be negative becasuse fo the way the function above works
 Linkage.EndEffector.X = -x;
 Linkage.EndEffector.Z = -z;
 
-
-boomPlotter(Platform, Boom, Hip, Linkage);
+boomPlotter(Platform, Boom, Hip, Linkage, Phi);

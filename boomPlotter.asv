@@ -1,0 +1,147 @@
+function boomPlotter(Platform ,Boom, Hip, Linkage, Phi)
+
+
+%{
+
+ **** Be careful with multiple translations, the lenghts are not rotated
+ and therefore are not in the right frame.  Need to make these adjustments
+ before the rotation occurs
+
+%}
+
+
+%% Data sorting
+
+BoomAnglesGround = Boom.Theta;
+BoomAnglesVertical = Boom.Phi; %CHECK THIS!
+
+%https://en.wikipedia.org/wiki/Rotation_matrix
+alphas = BoomAnglesGround;
+betas = BoomAnglesVertical;
+gammas = zeros(length(alphas), 1);
+
+%% Platform
+drawPlatform(Platform);
+
+%% Boom Arm 
+armCoord = makeArm(Boom);
+
+%% Hip
+hipCoord = makeHip(Hip);
+
+%% End Effecter
+effectorCoord = makeEndEffector(Linkage);
+
+%% Left Proximal Link
+proximalLeftCoords = makeLeftProximal(Linkage);
+
+%% Right Proximal Link
+proximalRightCoords = makeRightProximal(Linkage);
+
+%% Left Distal Link
+distalLeftCoords = makeLeftDistal(Linkage, Phi);
+
+%% Right Distal Link
+distalRightCoords = makeRightDistal(Linkage, Phi);
+
+%% Rotation Matrices
+[rotMatrix] = boomFrame2WorldFrame(alphas, betas, gammas, i)
+
+%% Moving the bodies
+for i = 1:10:length(alphas)
+    
+  
+    
+    % Boom --------------------------------
+    % X, Y, Z of the end of the boom
+    temparmCoord = rotMatrix * armCoord;
+    BoomXs = temparmCoord(1,:);
+    BoomYs = temparmCoord(2,:);
+    BoomZs = -temparmCoord(3,:) + Boom.VerticalDisplacement;
+
+    BoomAlphaShape = alphaShape(BoomXs', BoomYs', BoomZs');
+    h1 = plot(BoomAlphaShape, 'FaceColor', 'white');
+    %view(45, 20);
+       
+    % Hip -----------------------------
+
+    temphipCoord = rotMatrix * hipCoord;
+    HipXs = temphipCoord(1,:) + mean(BoomXs(5:end));
+    HipYs = temphipCoord(2,:) + mean(BoomYs(5:end));
+    HipZs = -temphipCoord(3,:) + mean(BoomZs(5:end));
+    % only doing the last four because those are the four points at
+    % the end of the boom
+
+    HipAlphaShape = alphaShape(HipXs', HipYs', HipZs');
+    h2 = plot(HipAlphaShape, 'FaceColor', 'white');
+    
+    % Proximal Left ------------------------
+    
+    tempProximalLeftCoord = rotMatrix * (proximalLeftCoords(:, :, i)');
+
+    plXs = tempProximalLeftCoord(1,:) + mean(HipXs(5:end));
+    plYs = tempProximalLeftCoord(2,:) + mean(HipYs(5:end));
+    plZs = -tempProximalLeftCoord(3,:) + mean(HipZs(5:end));% + .1*Hip.Height; %FIND THE REAL VALUE
+
+    PLAlphaShape = alphaShape(plXs', plYs', plZs');
+    h3 = plot(PLAlphaShape, 'FaceColor', 'black');
+
+    % Proximal Right ------------------------
+    
+    tempProximalRightCoord = rotMatrix * (proximalRightCoords(:, :, i)');
+
+    prXs = tempProximalRightCoord(1,:) + mean(HipXs(5:end));
+    prYs = tempProximalRightCoord(2,:) + mean(HipYs(5:end));
+    prZs = -tempProximalRightCoord(3,:) + mean(HipZs(5:end)); %+ .1*Hip.Height; %FIND THE REAL VALUE
+
+    PRAlphaShape = alphaShape(prXs', prYs', prZs');
+    h4 = plot(PRAlphaShape, 'FaceColor', 'black');
+    % axis([-2 2 -2 2 0 1.5]);
+
+    % Distal Left ------------------------
+    
+    tempDistalLeftCoord = rotMatrix * (distalLeftCoords(:, :, i)');
+
+    dlXs = tempDistalLeftCoord(1,:) + mean(plXs(5:end));
+    dlYs = tempDistalLeftCoord(2,:) + mean(plYs(5:end));
+    dlZs = -tempDistalLeftCoord(3,:) + mean(plZs(5:end));
+
+    DLAlphaShape = alphaShape(dlXs', dlYs', dlZs');
+    h5 = plot(DLAlphaShape, 'FaceColor', 'white');
+
+    % Distal Right ------------------------
+    
+    tempDistalRightCoord = rotMatrix * (distalRightCoords(:, :, i)');
+
+    drXs = tempDistalRightCoord(1,:) + mean(prXs(5:end));
+    drYs = tempDistalRightCoord(2,:) + mean(prYs(5:end));
+    drZs = -tempDistalRightCoord(3,:) + mean(prZs(5:end));
+
+    DRAlphaShape = alphaShape(drXs', drYs', drZs');
+    h6 = plot(DRAlphaShape, 'FaceColor', 'white');
+    axis([-2 2 -2 2 0 2]);
+
+    % End Effector ------------------------
+    tempeffecotrCoord = rotMatrix * effectorCoord;
+    eeXs = tempeffecotrCoord(1,:)+ mean([dlXs(5:end) drXs(5:end)]);
+    eeYs = tempeffecotrCoord(2,:) + mean([dlYs(5:end) drYs(5:end)]);
+    eeZs = -tempeffecotrCoord(3,:) + mean([dlZs(5:end) drZs(5:end)]);
+
+    EEAlphaShape = alphaShape(eeXs', eeYs', eeZs');
+    h7 = plot(EEAlphaShape, 'FaceColor', 'blue');
+
+
+    % Cleanup ----------------------------
+    pause(.1);
+    delete(h1)
+    delete(h2);
+    delete(h3);
+    delete(h4);
+    delete(h5);
+    delete(h6);
+    delete(h7);
+   
+
+end
+
+
