@@ -58,7 +58,10 @@ for i = 1:10:length(alphas)
     [h4, prXs, prYs, prZs] =  drawProximalRightInWorld(rotMatrix, proximalRightCoords, HipXs, HipYs, HipZs, i);
     [h5, dlXs, dlYs, dlZs] =  drawDistalLeftInWorld(rotMatrix, distalLeftCoords, plXs, plYs, plZs, i);
     [h6, drXs, drYs, drZs] =  drawDistalRightInWorld(rotMatrix, distalRightCoords, prXs, prYs, prZs, i);
-    [h7] =  drawEndEffectorInWorld(rotMatrix, effectorCoord, dlXs, dlYs, dlZs, drXs, drYs, drZs);
+    [h7, eeXs, eeYs, eeZs] =  drawEndEffectorInWorld(rotMatrix, effectorCoord, dlXs, dlYs, dlZs, drXs, drYs, drZs);
+
+    view(90+BoomAnglesGround(i)*180/pi, 10)
+    drawnow;
 
 
     % Cleanup ----------------------------
@@ -70,6 +73,7 @@ for i = 1:10:length(alphas)
     delete(h5);
     delete(h6);
     delete(h7);
+
 
 
 end

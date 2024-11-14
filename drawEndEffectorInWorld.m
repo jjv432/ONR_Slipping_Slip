@@ -1,4 +1,4 @@
-function [h7, drXs, drYs, drZs] =  drawEndEffectorInWorld(rotMatrix, effectorCoord, dlXs, dlYs, dlZs, drXs, drYs, drZs)
+function [h7, eeXs, eeYs, eeZs] =  drawEndEffectorInWorld(rotMatrix, effectorCoord, dlXs, dlYs, dlZs, drXs, drYs, drZs)
 
 % End Effector ------------------------
     tempeffecotrCoord = rotMatrix * effectorCoord;
