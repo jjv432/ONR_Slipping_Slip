@@ -51,14 +51,32 @@ rotMatrices = boomFrame2WorldFrame(alphas, betas, gammas);
 for i = 1:10:length(alphas)
     axis([-2 2 -2 2 0 2]);
     rotMatrix = rotMatrices(:, :, :, i);
+    
+    % Add CoordLenght to the draw function!
+    CoordLength = size(armCoord, 1);
 
-    [h1, BoomXs, BoomYs, BoomZs] = drawArmInWorld(rotMatrix, armCoord, Boom);
-    [h2, HipXs, HipYs, HipZs] =  drawHipInWorld(rotMatrix, hipCoord, BoomXs, BoomYs, BoomZs);
-    [h3, plXs, plYs, plZs] =  drawProximalLeftInWorld(rotMatrix, proximalLeftCoords, HipXs, HipYs, HipZs, i);
-    [h4, prXs, prYs, prZs] =  drawProximalRightInWorld(rotMatrix, proximalRightCoords, HipXs, HipYs, HipZs, i);
-    [h5, dlXs, dlYs, dlZs] =  drawDistalLeftInWorld(rotMatrix, distalLeftCoords, plXs, plYs, plZs, i);
-    [h6, drXs, drYs, drZs] =  drawDistalRightInWorld(rotMatrix, distalRightCoords, prXs, prYs, prZs, i);
-    [h7, eeXs, eeYs, eeZs] =  drawEndEffectorInWorld(rotMatrix, effectorCoord, dlXs, dlYs, dlZs, drXs, drYs, drZs);
+    % Draw Arm
+    [h1, BoomXs, BoomYs, BoomZs] = drawBodyInWorld(rotMatrix, armCoord', zeros(CoordLength), zeros(CoordLength), Boom.VerticalDisplacement*ones(CoordLength), 1, 'black');
+
+    % Draw Hip
+    [h2, HipXs, HipYs, HipZs] =  drawBodyInWorld(rotMatrix, hipCoord', BoomXs, BoomYs, BoomZs, 1, 'white');
+
+    % Draw Proximal Left
+    [h3, plXs, plYs, plZs] =  drawBodyInWorld(rotMatrix, proximalLeftCoords, HipXs, HipYs, HipZs, i, 'blue');
+
+    % Draw Proximal Right
+    [h4, prXs, prYs, prZs] =  drawBodyInWorld(rotMatrix, proximalRightCoords, HipXs, HipYs, HipZs, i, 'blue');
+
+    % Draw Distal Left
+    [h5, dlXs, dlYs, dlZs] =  drawBodyInWorld(rotMatrix, distalLeftCoords, plXs, plYs, plZs, i, 'black');
+
+    % Draw Distal Right
+    [h6, drXs, drYs, drZs] =  drawBodyInWorld(rotMatrix, distalRightCoords, prXs, prYs, prZs, i, 'black');
+
+    % Draw End Effector
+    % Should fix this so that it requires it to be in the middle of the two
+    % distal, quick fix for now
+    [h7, eeXs, eeYs, eeZs] =  drawBodyInWorld(rotMatrix, effectorCoord', dlXs, dlYs, dlZs, 1, 'blue');
 
     view(90+BoomAnglesGround(i)*180/pi, 10)
     drawnow;
