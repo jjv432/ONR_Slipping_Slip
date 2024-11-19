@@ -3,6 +3,7 @@ close all
 clearvars
 format compact
 t = readstruct("BoomData_HandActuated.json");
+addpath("PlottingFunctions\");
 %{
 
     World frame: Z up, x-y in-plane with ground 
