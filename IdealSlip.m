@@ -66,27 +66,57 @@ Y_cubic = [Y_stance_cubic; Y_flight_cubic(2:end, :)];
 disp(' trajectory of motion has been generated ');
 
 
-%% Figure
-figure;
+%% Generating X and Y Values
+
 [t_stance_2, X_stance_2, Y_stance_2, t_flight_2, Y_flight_2, t_2, X_2, Y_2] = func_sim_next_step(t_cubic, Y_cubic);
 t_final = [t_cubic; t_2];
 X_final = [X_cubic; X_2];
 Y_final = [Y_cubic; Y_2];
+
+stance_y_vals = [];
+flight_y_vals = [];
+stance_x_vals = [];
+flight_x_vals = [];
+
+stanceIndices = [];
+flightIndices = [];
+figure()
+hold on
 
 for i = 1:nsteps
     [~, ~, Y_stance_n, ~, Y_flight_n, t_n, X_n, Y_n] = func_sim_next_step(t_final, Y_final);
     t_final = [t_final; t_n];
     X_final = [X_final; X_n];
     Y_final = [Y_final; Y_n];
-    
-    plot(Y_stance_n(:, 1), Y_stance_n(:, 2),...
-        'color', '#AE2012', 'LineWidth', 1);
-    hold on;
-    plot(Y_flight_n(:, 1), Y_flight_n(:, 2),...
-        'color', '#0044BB', 'LineWidth', 1);
-    axis equal
-    hold on;
+
+    stance_y_vals.(strcat('P', num2str(i))) = Y_stance_n(:,2);
+    flight_y_vals.(strcat('P', num2str(i))) =  Y_flight_n(:,2);
+    stance_x_vals.(strcat('P', num2str(i))) = Y_stance_n(:,1);
+    flight_x_vals.(strcat('P', num2str(i))) = Y_flight_n(:,1);
+
+    stance_x_vals.(strcat('P', num2str(i), 'midpoint')) = mean(Y_stance_n(:,1));
+    flight_x_vals.(strcat('P', num2str(i), 'midpoint')) = mean(Y_flight_n(:,1));
+
+    plot(Y_stance_n(:,1), Y_stance_n(:,2))
+    plot(Y_flight_n(:,1), Y_flight_n(:,2))
+
+
 end
+
+
+%% Figure
+
+mass_radius = 1;
+
+figure();
+hold on
+params.mass_radius = 1;
+for z = 1:nsteps
+    drawSLIPModel(stance_x_vals.(strcat('P', num2str(z))), stance_y_vals.(strcat('P', num2str(z))), params, state)
+    drawSLIPModel(flight_x_vals.(strcat('P', num2str(z))), flight_y_vals.(strcat('P', num2str(z))), params, state)
+
+end
+
 
 yline(0)
 grid on; grid minor;
