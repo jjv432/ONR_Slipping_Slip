@@ -16,7 +16,7 @@ v = 1.65;
 alpha = 15 *pi/180;
 theta0 = 109.015 *pi/180;
 K = [2 20]; % PD controller coefficients
-nsteps = 3; %larger than 3
+nsteps = 5; %larger than 3
 
 
 %% Open loop
@@ -65,6 +65,14 @@ X_cubic = [X_stance_cubic; NaN(N_flight_cubic - 1, 4)];
 Y_cubic = [Y_stance_cubic; Y_flight_cubic(2:end, :)];  
 disp(' trajectory of motion has been generated ');
 
+stance_y_vals.('P1') = Y_stance_cubic(:,2);
+flight_y_vals.('P1') =  Y_flight_cubic(:,2);
+stance_x_vals.('P1') = Y_stance_cubic(:,1);
+flight_x_vals.('P1') = Y_flight_cubic(:,1);
+
+stance_x_vals.('P1midpoint') = mean(Y_stance_cubic(:,1));
+flight_x_vals.('P1midpoint') = mean(Y_flight_cubic(:,1));
+
 
 %% Generating X and Y Values
 
@@ -73,17 +81,18 @@ t_final = [t_cubic; t_2];
 X_final = [X_cubic; X_2];
 Y_final = [Y_cubic; Y_2];
 
-stance_y_vals = [];
-flight_y_vals = [];
-stance_x_vals = [];
-flight_x_vals = [];
+stance_y_vals.('P2') = Y_stance_2(:,2);
+flight_y_vals.('P2') =  Y_flight_2(:,2);
+stance_x_vals.('P2') = Y_stance_2(:,1);
+flight_x_vals.('P2') = Y_flight_2(:,1);
 
-stanceIndices = [];
-flightIndices = [];
+stance_x_vals.('P2midpoint') = mean(Y_stance_2(:,1));
+flight_x_vals.('P2midpoint') = mean(Y_flight_2(:,1));
+state = '';
 figure()
 hold on
 
-for i = 1:nsteps
+for i = 3:nsteps
     [~, ~, Y_stance_n, ~, Y_flight_n, t_n, X_n, Y_n] = func_sim_next_step(t_final, Y_final);
     t_final = [t_final; t_n];
     X_final = [X_final; X_n];
@@ -107,16 +116,21 @@ end
 %% Figure
 
 mass_radius = 1;
+params.mass_radius = .05;
 
 figure();
 hold on
-params.mass_radius = 1;
+yline(0)
+grid on; grid minor;
+axis equal
 for z = 1:nsteps
-    drawSLIPModel(stance_x_vals.(strcat('P', num2str(z))), stance_y_vals.(strcat('P', num2str(z))), params, state)
-    drawSLIPModel(flight_x_vals.(strcat('P', num2str(z))), flight_y_vals.(strcat('P', num2str(z))), params, state)
+    state = 'stance';
+    drawSLIPModel(stance_x_vals.(strcat('P', num2str(z))), stance_y_vals.(strcat('P', num2str(z))), stance_x_vals.(strcat('P', num2str(z), 'midpoint')), params, state);
+    state = 'flight';
+    drawSLIPModel(flight_x_vals.(strcat('P', num2str(z))), flight_y_vals.(strcat('P', num2str(z))), flight_x_vals.(strcat('P', num2str(z), 'midpoint')),params, state);
 
 end
 
 
-yline(0)
-grid on; grid minor;
+
+
