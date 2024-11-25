@@ -16,31 +16,8 @@ addpath("PlottingFunctions\");
 
     Real measurements of everything
 
-    Fix angle issues
-
     Get real data for x, z, and thetas
 
-    ROTATE THEN TRANSLATE
-    Hip is detaching from boom arm
-
-    Z value for ee is off now. Rotation matrices are hiding the problem im
-    pretty sure
-    
-    Distal approach seems wrong.  I think what I need to do is something
-    closer to the approach in Derek's function.  Alpha' and 'Beta' as I
-    drew on the board will always be the same, it's just the average of the
-    two that will change.  So the linkage only moves up and down on a line
-    that is drawn as the average of the two motor angles
-
-    FiveBarFK_Symmetric_Coaxial is returning values of x and z when angle 1
-    is 0 that are unacceptable to the function
-    
-    Distal equation gives a lot of problems rn. Back to the drawing board
-    with the function and figure out how to find those angles.  Take
-    advantage of Derek's function returning theta and R between the links
-    instead of just X and Y?
-
-    Distal link rotation matrix is off!
 %}
 
 %% Sorting Data
