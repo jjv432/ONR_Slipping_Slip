@@ -21,6 +21,7 @@ for i = 1:200:length(x_vals)
     moved_mass_x = mass_xvals + x_vals(i);
     moved_mass_y = mass_yvals + y_vals(i);
     h1 = fill(moved_mass_x, moved_mass_y, 'r');
+    axis([-1 + x_vals(i), x_vals(i) + 1, -.5, 1])
 
 
     % This is for the effector.  It changes behavior based on if it's in
@@ -42,14 +43,13 @@ for i = 1:200:length(x_vals)
             h2 = fill(effector_rot(1,:) + x_effector_contact, effector_rot(2,:), 'g');
             drawnow;
 
-            axis([-1 2.5 -.5 1])
+            
 
             delete(h1);
             delete(h2);
 
         case 'flight'
-            drawnow;
-            axis([-1 2.5 -.5 1])
+            drawnow;    
 
             delete(h1);
     end

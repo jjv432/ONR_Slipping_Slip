@@ -13,7 +13,7 @@ load param.mat;
 
 %% Parameters
 v = 1.65;
-alpha = 15 *pi/180;
+alpha = 20 *pi/180;
 theta0 = 109.015 *pi/180;
 K = [2 20]; % PD controller coefficients
 nsteps = 5; %larger than 3
@@ -120,7 +120,7 @@ params.mass_radius = .05;
 
 figure();
 hold on
-yline(0)
+yline(0, 'LineWidth', 4)
 grid on; grid minor;
 axis equal
 for z = 1:nsteps
