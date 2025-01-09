@@ -123,14 +123,21 @@ hold on
 yline(0, 'LineWidth', 4)
 grid on; grid minor;
 axis equal
+
+vid = VideoWriter("SLIPModel", "MPEG-4");
+vid.FrameRate = 20;
+vid.Quality = 85;
+open(vid);
 for z = 1:nsteps
     state = 'stance';
-    drawSLIPModel(stance_x_vals.(strcat('P', num2str(z))), stance_y_vals.(strcat('P', num2str(z))), stance_x_vals.(strcat('P', num2str(z), 'midpoint')), params, state);
+    drawSLIPModel(stance_x_vals.(strcat('P', num2str(z))), stance_y_vals.(strcat('P', num2str(z))), stance_x_vals.(strcat('P', num2str(z), 'midpoint')), params, state, vid);
     state = 'flight';
-    drawSLIPModel(flight_x_vals.(strcat('P', num2str(z))), flight_y_vals.(strcat('P', num2str(z))), flight_x_vals.(strcat('P', num2str(z), 'midpoint')),params, state);
+    drawSLIPModel(flight_x_vals.(strcat('P', num2str(z))), flight_y_vals.(strcat('P', num2str(z))), flight_x_vals.(strcat('P', num2str(z), 'midpoint')),params, state, vid);
+    
+    
 
 end
 
-
+close(vid)
 
 

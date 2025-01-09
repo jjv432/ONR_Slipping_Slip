@@ -1,4 +1,4 @@
-function [h1] = drawSLIPModel(x_vals, y_vals, midpoint_x, params, state)
+function [h1] = drawSLIPModel(x_vals, y_vals, midpoint_x, params, state, vid)
 
 
 drawThetas = linspace(0, 2*pi, 100);
@@ -42,7 +42,7 @@ for i = 1:200:length(x_vals)
             % Drawing the effector
             h2 = fill(effector_rot(1,:) + x_effector_contact, effector_rot(2,:), 'g');
             drawnow;
-
+            writeVideo(vid, getframe(gcf));
             
 
             delete(h1);
@@ -50,7 +50,7 @@ for i = 1:200:length(x_vals)
 
         case 'flight'
             drawnow;    
-
+            writeVideo(vid, getframe(gcf));
             delete(h1);
     end
 
